@@ -19,11 +19,10 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Clave secreta codificada en Base64 para firmar el token
     @Value("${app.secret.jwt}")
     private String SECRET_KEY;
 
-    // Tiempo de expiración del token en milisegundos (ej. 30 minutos)
+    // Tiempo de expiración del token en milisegundos (30 minutos)
     private static final long EXPIRATION_TIME = 1000 * 60 * 30;
 
     public String generateToken(UserDetails userDetails){
@@ -78,13 +77,11 @@ public class JwtService {
     }
 
      //Extrae la fecha de expiración desde el token.
-
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
      //Extrae cualquier claim del token utilizando una función
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

@@ -44,17 +44,13 @@ public class AuthService implements IAuthService{
         savedUser.setRole(
                 roleService.findRoleByRoleName("ROLE_PRE_USER")
         );
-        //Guardar el usuario con su contraseña encriptada
-        //Asignar el role de ROLE_PRE_USER
         savedUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         userRepo.save(savedUser);
 
-        //Guardar el link de verificación
         linkService.savedToken(savedUser);
         String tokenVerification = linkService.findEmailTokenByUser(savedUser).getVerificationToken();
         String linkVerification = linkService.createLink(tokenVerification);
 
-        //envíar el email con el link de verificación
         emailService.sendEmail(
                 new String[]{registerRequest.getEmail()},
                 "Paso final para confirmación de su registro",
@@ -85,18 +81,14 @@ public class AuthService implements IAuthService{
     @Override
     public JwtResponseDTO login(LoginRequest request) {
 
-        // Autenticación del usuario con email y password
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        //Obtener los detalles del usuario autenticado
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        //Generar el token JWT
         String jwtToken = jwtService.generateToken(userDetails);
 
-        // Crear respuesta JWT con información adicional
         return new JwtResponseDTO(
                 jwtToken,
                 userDetails.getUserEntity().getUsername(),
